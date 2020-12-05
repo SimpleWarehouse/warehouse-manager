@@ -39,10 +39,15 @@ const logIn = async (username, password) => {
         throw new ServerError('Wrong credentials', 400);
     }
 
+    // replacing the token might force users to log off from other
+    // browsers/devices which is an unpleasant behaviour
+    if (user.logged_in_token) {
+        return user;
+    }
+
     const token = uuid();
 
     const alteredUsers = await query('UPDATE users SET logged_in_token = $2 WHERE id = $1 RETURNING *', [user.id, token]);
-
 
     return alteredUsers[0];
 };
