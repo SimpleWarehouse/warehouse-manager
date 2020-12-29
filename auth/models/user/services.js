@@ -56,7 +56,7 @@ const logIn = async (username, password) => {
 const logOut = async (id, token) => {
     const alteredUsers = await query('UPDATE users SET logged_in_token = NULL WHERE id = $1 AND logged_in_token = $2 RETURNING *', [id, token]);
 
-    if (alteredUsers.length === 1) {
+    if (alteredUsers.length !== 1) {
         throw new ServerError('Unconfirmed identity', 400);
     }
 };

@@ -35,7 +35,7 @@ router.post('/register', async (req, res, next) => {
     }
 });
 
-router.post('/log-in', async (req, res, next) => {
+router.post('/login', async (req, res, next) => {
     const {
         username,
         password
@@ -64,7 +64,7 @@ router.post('/log-in', async (req, res, next) => {
     }
 });
 
-router.post('/log-out', async (req, res, next) => {
+router.post('/logout', async (req, res, next) => {
     const {
         id,
         token,
@@ -89,7 +89,7 @@ router.post('/log-out', async (req, res, next) => {
     }
 });
 
-router.post('/confirm-identity', async (req, res, next) => {
+router.post('/validate', async (req, res, next) => {
     const {
         id,
         token,

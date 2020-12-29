@@ -1,0 +1,37 @@
+### Register an account
+POST http://localhost:3001/auth/register
+Content-Type: application/json
+
+{
+   "username": "test",
+   "password": "test"
+}
+
+
+### Login with an account
+POST http://localhost:3001/auth/login
+Content-Type: application/json
+
+{
+   "username": "test",
+   "password": "test"
+}
+
+
+### Logout from an account
+POST http://localhost:3001/auth/logout
+Content-Type: application/json
+
+{
+  "id": 1,
+  "token": "73fef89b-c6de-42c5-8e12-719d4044d3c0"
+}
+
+### Validate an auth token
+POST http://localhost:3001/auth/validate
+Content-Type: application/json
+
+{
+  "id": 1,
+  "token": "73fef89b-c6de-42c5-8e12-719d4044d3c0"
+}
