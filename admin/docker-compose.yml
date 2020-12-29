@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "30001:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: test
+      PGADMIN_DEFAULT_PASSWORD: test
