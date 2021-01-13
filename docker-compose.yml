@@ -22,7 +22,8 @@ services:
     ports:
       - "27019:27017"
     volumes:
-        - docker-data:/data/db
+      - mongo_data:/data/db
+
   mongo-express:
     image: mongo-express
     restart: always
@@ -33,6 +34,34 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
     logging:
       driver: none
+  
+  auth:
+    image: kennythebard/wms-auth:1.0
+    ports:
+      - "3002:3002"
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: authdb
+      TZ: Europe/Bucharest
+      PGTZ: Europe/Bucharest
+    ports:
+      - "54321:5432"
+    volumes:
+      - auth_data:/var/lib/postgresql/auth_data
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "30001:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: test
+      PGADMIN_DEFAULT_PASSWORD: test
     
 volumes:
-  docker-data:
+  mongo_data:
+  auth_data:
