@@ -1,5 +1,5 @@
 ### Register an account
-POST http://localhost:3001/auth/register
+POST http://localhost:3002/auth/register
 Content-Type: application/json
 
 {
@@ -9,7 +9,7 @@ Content-Type: application/json
 
 
 ### Login with an account
-POST http://localhost:3001/auth/login
+POST http://localhost:3002/auth/login
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 
 
 ### Logout from an account
-POST http://localhost:3001/auth/logout
+POST http://localhost:3002/auth/logout
 Content-Type: application/json
 
 {
@@ -28,7 +28,7 @@ Content-Type: application/json
 }
 
 ### Validate an auth token
-POST http://localhost:3001/auth/validate
+POST http://localhost:3002/auth/validate
 Content-Type: application/json
 
 {

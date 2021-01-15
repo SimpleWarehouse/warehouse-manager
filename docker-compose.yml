@@ -36,9 +36,11 @@ services:
       driver: none
   
   auth:
-    image: kennythebard/wms-auth:1.0
+    image: kennythebard/wms-auth:1.9
     ports:
       - "3002:3002"
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres
@@ -52,7 +54,7 @@ services:
       - "54321:5432"
     volumes:
       - auth_data:/var/lib/postgresql/auth_data
-      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+      - ./auth_init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
   
   pgadmin:
     image: dpage/pgadmin4
@@ -61,6 +63,28 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: test
       PGADMIN_DEFAULT_PASSWORD: test
+
+  # kong:
+  #   image: kong:latest
+  #   restart: always
+  #   networks:
+  #     - kong-net
+  #   environment:
+  #     KONG_PG_HOST: kong-database
+  #     KONG_PROXY_LISTEN: 0.0.0.0:8000
+  #     KONG_PROXY_LISTEN_SSL: 0.0.0.0:8443
+  #     KONG_ADMIN_LISTEN: 0.0.0.0:8001
+  #   depends_on:
+  #     - kong-migration
+  #     - kong-database
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://kong:8001"]
+  #     interval: 5s
+  #     timeout: 2s
+  #     retries: 15
+  #   ports:
+  #     - "8001:8001"
+  #     - "8000:8000"
     
 volumes:
   mongo_data:
