@@ -1,37 +1,41 @@
-const express = require('express');
 const morgan = require('morgan'); //middleware de logare
-const helmet = require('helmet'); //middleware de securitate
-const cors = require('cors'); //middleware de cors
+const moment = require('moment'); //middleware de logare
+const mongoose = require('mongoose');
 
 require('dotenv').config()
 
-const routes = require('./routes');
+const ProdusModel = mongoose.model('Produs');
 
-const app = express();
-
-app.use(helmet());
-app.use(cors());
-app.use(morgan(':remote-addr - :remote-user [:date[web]] ":method :url HTTP/:http-version" :status :res[content-length]'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-app.use('/auth', routes);
-
-// handler de erori declarat ca middleware
-app.use((err, req, res, next) => {
-    console.trace(err);
-    let status = 500;
-    let message = 'Something Bad Happened';
-    if (err.httpStatus) {
-        status = err.httpStatus;
-        message = err.message;
+// create a SMTP transport with gmail credentials
+const smtpTransport = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: process.env.GMAIL_USERNAME,
+        pass: process.env.GMAIL_PASSWORD
     }
-    res.status(status).json({
-        error: message,
-    });
 });
 
+// statistics function
+const calculateStatistics = async () => {
+    const statistic = await ProdusModel
+        .find()
+        .filter(p => {
+            weight: p.weight;
+            price: p.price;
+        }).reduce((acc, value) => {
+            weight: acc.weight + value.weight;
+            price: acc.price + acc.weight;
+        });
 
-app.listen(process.env.PORT, () => {
-    console.log(`App is listening on ${process.env.PORT}`);
+    const today = moment.unix(moment.now()).format('MMMM Do YYYY');
+    await this.smtp.sendMail({
+        to: process.env.STATISTICS_ADMIN_EMAIL,
+        subject: `Statistics for ${today}`,
+        html: `Today, ${today}, we have in our warehouse ${statistic.weight} of products with value of ${statistic.price}.`
+    })
+};
+
+// schedule the task to update subscribers
+cron.schedule('0 1 * * *', () => {
+    calculateStatistics();
 });

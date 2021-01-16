@@ -18,13 +18,18 @@
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "helmet": "^3.21.3",
+    "moment": "^2.29.1",
+    "mongoose": "^5.11.12",
     "morgan": "^1.9.1",
+    "node-cron": "^2.0.3",
+    "nodemailer": "^6.4.17",
     "pg": "^7.18.2",
     "uuid": "^8.3.1",
     "validator": "^12.2.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@types/moment": "^2.13.0",
     "nodemon": "^2.0.2"
   }
 }
