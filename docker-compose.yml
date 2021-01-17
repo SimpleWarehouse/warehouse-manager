@@ -56,13 +56,12 @@ services:
       - auth_data:/var/lib/postgresql/auth_data
       - ./auth_init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
   
-  pgadmin:
-    image: dpage/pgadmin4
+  adminer:
+    image: adminer
     ports:
-      - "30001:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: test
-      PGADMIN_DEFAULT_PASSWORD: test
+      - 8080:8080
+    depends_on:
+      - postgres
   
   reports:
     image: kennythebard/wms-reports:1.0
