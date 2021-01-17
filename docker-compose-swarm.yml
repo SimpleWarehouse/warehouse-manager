@@ -92,7 +92,7 @@ services:
       - "54321:5432"
     volumes:
       - auth_data:/var/lib/postgresql/auth_data
-      - ./auth_init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - auth
       - adminer
