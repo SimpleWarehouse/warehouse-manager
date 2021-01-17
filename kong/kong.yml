@@ -1,0 +1,40 @@
+_format_version: "2.1"
+
+services:
+
+  - name: backend_produse
+    url: http://mystack_backend_produse
+    plugins:
+      - name: key-auth
+    routes:
+      - name: backend-service
+        paths: 
+          - /produse
+
+  - name: auth
+    url: http://mystack_auth/auth
+    routes:
+      - name: auth-service
+        paths:
+          - /auth/register
+          - /auth/login
+
+
+  - name: adminer
+    url: http://mystack_adminer:8080
+    routes:
+      - name: adminer-service
+        paths:
+          - /adminer
+
+  - name: mongo-express
+    url: http://mystack_mongo-express:8081
+    routes:
+      - name: mongo-service
+        paths:
+          - /mongo
+
+consumers:
+  - username: user
+    keyauth_credentials:
+      - key: key

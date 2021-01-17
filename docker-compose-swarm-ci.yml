@@ -1,0 +1,171 @@
+version: "3.7"
+services:
+  frontend_produse:
+    image: registry.gitlab.com/simplewarehouse/frontendservice:latest
+    stdin_open: true
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      VUE_APP_URL: mystack_backend_produse
+    depends_on:
+      - backend_produse
+    networks:
+      - ui
+
+  backend_produse:
+    image: registry.gitlab.com/simplewarehouse/backendservice:latest
+    ports:
+      - "3000:3000"
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        order: start-first
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - backend
+      - ui
+      - internal
+
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: produse
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - backend
+      - reports
+      - mongo_express
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+    logging:
+      driver: none
+    networks:
+      - mongo_express
+      - internal
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  auth:
+    image: registry.gitlab.com/simplewarehouse/authservice:latest
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres
+    networks:
+      - auth
+      - internal
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        order: start-first
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: authdb
+      TZ: Europe/Bucharest
+      PGTZ: Europe/Bucharest
+    ports:
+      - "54321:5432"
+    volumes:
+      - auth_data:/var/lib/postgresql/auth_data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - auth
+      - adminer
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    networks:
+      - adminer
+      - internal
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  reports:
+    image: registry.gitlab.com/simplewarehouse/reportservice:latest
+    depends_on:
+      - mongo
+    networks:
+      - reports
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - 8082:8080
+    stop_grace_period: 1m10s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  kong:
+    image: kong:latest
+    volumes:
+      - ./kong:/usr/local/kong/declarative
+    environment:
+      KONG_DATABASE: 'off'
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+    ports:
+      - 80:8000
+      - 443:8443
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - internal
+
+
+volumes:
+  mongo_data:
+  auth_data:
+
+networks:
+  backend:
+  ui:
+  mongo_express:
+  reports:
+  auth:
+  adminer:
+  internal:
